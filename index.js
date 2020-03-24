@@ -2,6 +2,10 @@
 const logger    = require('./app/modules/logger');
 const push = require("./app/modules/database_mod");
 
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+
 // Load the SDK
 let RainbowSDK = require("rainbow-node-sdk");
 
@@ -51,7 +55,48 @@ let rainbowSDK = new RainbowSDK(options);
 
 // Start the SDK
 rainbowSDK.start().then(() => {
-    // Do something when the SDK is connected to Rainbow
+     // Do something when the SDK is connected to Rainbow
+
+     // listen to request
+    app.use(express.static('public'));
+    app.use(bodyParser.urlencoded({
+    extended: true
+    }));
+
+    // a simple form on localhost
+    app.get('/',function(req,res){
+    res.sendfile("index.html");
+    });
+
+    // creates guest user account
+    app.post('/', async function(req,res){
+        var firstName=req.body.firstName;
+        var lastName=req.body.lastName;
+        var guestaccount;
+        console.log("first Name = "+firstName+", last Name = "+lastName);
+
+        var guestaccount = await rainbowSDK.admin.createGuestUser(firstName, lastName, "en-US", 86400).then( (guest) => {
+            // Do something when the guest has been created and added to that company
+            return guest;
+            //logger.log("debug", "guest"+guest);
+        }).catch((err) => {
+            // Do something in case of error
+            logger.log("debug", "error creating user");
+        });
+
+        var loginCred = {"loginEmail": guestaccount.loginEmail, "password": guestaccount.password};
+        
+        // returns the credentials for guest user account
+        res.end(JSON.stringify(loginCred));
+     });
+     
+    var server = app.listen(8081, function () {
+        var host = server.address().address
+        var port = server.address().port
+        console.log("Example app listening at http://%s:%s", host, port)
+     });
+    
+    // Routing part
     rainbowSDK.events.on("rainbow_onmessagereceived", async (message) => {
         // Check if the message is not from you
         if(!message.fromJid.includes(rainbowSDK.connectedUser.jid_im)) {
