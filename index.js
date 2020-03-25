@@ -1,6 +1,8 @@
 "use strict";
 const logger    = require('./app//modules/logger');
 const push = require("./app/modules/database_mod");
+const add_to_queue = require("./add_to_queue");
+//var mysql = require('mysql');
 
 var express = require('express');
 var app = express();
@@ -102,7 +104,8 @@ rainbowSDK.start().then(() => {
                 logger.log("debug", "bubble jid: "+ bubbleJid);
 
                 // push the bubble jid into the respective category in db
-
+                add_to_queue(bubbleJid, skill);
+                
             }).catch(function(err) {
                 // do something if the invitation failed (eg. bad reference to a buble)
                 logger.log("debug", "guest user invite failed");
@@ -125,7 +128,7 @@ rainbowSDK.start().then(() => {
         console.log("Example app listening at http://%s:%s", host, port)
      });
     
-     
+
 
     // Routing part
     rainbowSDK.events.on("rainbow_onmessagereceived", async (message) => {
