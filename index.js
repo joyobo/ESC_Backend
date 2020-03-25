@@ -1,6 +1,6 @@
 "use strict";
-const logger    = require('./app/modules/logger');
-const push = require("./app/modules/database_mod");
+const logger    = require('./modules/logger');
+const push = require("./modules/database_mod");
 
 var express = require('express');
 var app = express();
