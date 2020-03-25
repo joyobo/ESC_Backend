@@ -102,7 +102,7 @@ rainbowSDK.start().then(() => {
                 logger.log("debug", "bubble jid: "+ bubbleJid);
 
                 // push the bubble jid into the respective category in db
-                
+
             }).catch(function(err) {
                 // do something if the invitation failed (eg. bad reference to a buble)
                 logger.log("debug", "guest user invite failed");
@@ -125,6 +125,8 @@ rainbowSDK.start().then(() => {
         console.log("Example app listening at http://%s:%s", host, port)
      });
     
+     
+
     // Routing part
     rainbowSDK.events.on("rainbow_onmessagereceived", async (message) => {
         // Check if the message is not from you
@@ -132,7 +134,20 @@ rainbowSDK.start().then(() => {
             // Check that the message is from a user and not a bot
             if( message.type === "chat") {
                 // Answer to this user
-                rainbowSDK.im.sendMessageToJid("hello! Im listening!", message.fromJid);
+                rainbowSDK.im.sendMessageToJid("hello! status updated!", message.fromJid);
+
+                var contact_id = await rainbowSDK.contacts.getContactByJid(message.fromJid);
+
+                if(message.content == "offline"){
+                    // match with agents contact using contact_id and change the availability to 0
+                    rainbowSDK.im.sendMessageToJid("You are now OFFLINE", message.fromJid);
+                }
+                if(message.content == "online"){
+                    // match with agents contact using contact_id and change the availability to 0
+                    rainbowSDK.im.sendMessageToJid("You are now ONLINE", message.fromJid);
+                }
+
+                /*
                 push.todb(message.content);
                 // Do something with the message sent
                 if(message.content == "i want agent"){
@@ -166,7 +181,7 @@ rainbowSDK.start().then(() => {
                         // do something if the creation of the bubble failed (eg. providing the same name as an existing bubble)
                         logger.log("debug","bubble creation failed");
                     });
-                }
+                }*/
             }
         }
     });
