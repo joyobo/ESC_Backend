@@ -15,13 +15,13 @@ let options = {
         host: "sandbox"
     },
     credentials: {
-        login: "", // To replace by your developer credendials
-        password: "" // To replace by your developer credentials
+        login: "joey_yeo@mymail.sutd.edu.sg", // To replace by your developer credendials
+        password: "OFLl[8d(Py~8" // To replace by your developer credentials
     },
     // Application identifier
     application: {
-        appID: "",
-        appSecret: ""
+        appID: "b6f834105aed11eabf7e77d14e87b936",
+        appSecret: "LzUG5l0iM9YproZTONXSkwnRmeAl7cEWrxSyg3ziSHlPpOVGVA8YY5lC2R6B0IwT"
     },
 
     // Logs options
@@ -72,6 +72,8 @@ rainbowSDK.start().then(() => {
     app.post('/', async function(req,res){
         var firstName=req.body.firstName;
         var lastName=req.body.lastName;
+        var category = req.body.category;
+        var skill = req.body.skill;
         var guestaccount;
         console.log("first Name = "+firstName+", last Name = "+lastName);
 
@@ -83,8 +85,35 @@ rainbowSDK.start().then(() => {
             // Do something in case of error
             logger.log("debug", "error creating user");
         });
+        
+         // add user into a bubble
+         rainbowSDK.bubbles.createBubble("Support", "A little description of my bubble", false).then(async function(bubble) {
+            // do something with the bubble created
+            
+            let invitedAsModerator = false;     // To set to true if you want to invite someone as a moderator
+            let sendAnInvite = false;            // To set to false if you want to add someone to a bubble without having to invite him first
+            let inviteReason = "bot-invite";    // Define a reason for the invite (part of the invite received by the recipient)
+            var contact_id = await rainbowSDK.contacts.getContactById(guestaccount.id);
+            
+            rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, invitedAsModerator, sendAnInvite, inviteReason).then(function(bubbleUpdated) {
+                // do something with the invite sent
+                var bubbleJid = bubbleUpdated.jid;
+                logger.log("debug", "guest user has been added to bubble");
+                logger.log("debug", "bubble jid: "+ bubbleJid);
 
-        var loginCred = {"loginEmail": guestaccount.loginEmail, "password": guestaccount.password};
+                // push the bubble jid into the respective category in db
+                
+            }).catch(function(err) {
+                // do something if the invitation failed (eg. bad reference to a buble)
+                logger.log("debug", "guest user invite failed");
+            });
+
+        }).catch(function(err) {
+            // do something if the creation of the bubble failed (eg. providing the same name as an existing bubble)
+            logger.log("debug","guest bubble creation failed");
+        });
+
+        var loginCred = {"loginEmail": guestaccount.loginEmail, "password": guestaccount.password, "category":category, "skill":skill};
         
         // returns the credentials for guest user account
         res.end(JSON.stringify(loginCred));
