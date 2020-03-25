@@ -93,95 +93,44 @@ rainbowSDK.start().then(() => {
         res.sendfile("./public/call.html");
     })
 
-    app.post('/guestLogin', async function(req, res){
+    app.get('/guestLogin', async function(req, res){
         console.log("Creation of guest account request received.");
-
-        var guestaccount = await rainbowSDK.admin.createGuestUser(7200).then( (guest) => {
+        // Create account
+        var guestaccount = await rainbowSDK.admin.createAnonymousGuestUser(7200).then( (guest) => {
             return guest;
         }).catch((err) => {
             logger.log("debug", "error creating user");
         });
-        var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password};
+
+        // Create Bubble
+        let withHistory = true;
+        var bubbleId;
+        var bubble = await rainbowSDK.bubbles.createBubble("Support", "A little description of my bubble", withHistory).then((bubble) => {
+            return bubble;
+        }).catch(function(err) {
+            console.log("Error creating bubble");
+        });
+        bubbleId = bubble.id;
+        var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password, "BubbleId": bubbleId};
         
         // returns the credentials for guest user account
         res.end(JSON.stringify(loginCred));
+
+        // Add user into bubble
+        var contact_id = await rainbowSDK.contacts.getContactById(guestaccount.id);
+        rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, false, false, "").then(function(bubbleUpdated) {
+            // do something with the invite sent
+            logger.log("debug", "guest user has been added to bubble");
+            logger.log("debug", "bubble jid: "+ bubbleUpdated.jid);
+        }).catch(function(err) {
+            // do something if the invitation failed (eg. bad reference to a buble)
+            logger.log("debug", "guest user invite failed");
+        });
     })
-
-    // Currently we combien guest account creation and usage tgt
-    // creates guest user account
-    /*
-    app.post('/reAccount', async function(req,res){
-        var firstName=req.body.firstName;
-        var lastName=req.body.lastName;
-        var guestaccount;
-        console.log("first Name = "+firstName+", last Name = "+lastName);
-
-        var guestaccount = await rainbowSDK.admin.createGuestUser(firstName, lastName, "en-US", 86400).then( (guest) => {
-            // Do something when the guest has been created and added to that company
-            return guest;
-            //logger.log("debug", "guest"+guest);
-        }).catch((err) => {
-            // Do something in case of error
-            logger.log("debug", "error creating user");
-        });
-
-        var loginCred = {"loginEmail": guestaccount.loginEmail, "password": guestaccount.password};
-        
-        // returns the credentials for guest user account
-        res.end(JSON.stringify(loginCred));
-     });
-     */
      
     var server = app.listen(8081, function () {
         var host = server.address().address
         var port = server.address().port
         console.log("Example app listening at http://%s:%s", host, port)
      });
-    
-    // Routing part
-    rainbowSDK.events.on("rainbow_onmessagereceived", async (message) => {
-        // Check if the message is not from you
-        if(!message.fromJid.includes(rainbowSDK.connectedUser.jid_im)) {
-            // Check that the message is from a user and not a bot
-            if( message.type === "chat") {
-                // Answer to this user
-                rainbowSDK.im.sendMessageToJid("hello! Im listening!", message.fromJid);
-                push.todb(message.content);
-                // Do something with the message sent
-                if(message.content == "i want agent"){
-                    let withHistory = false; // Allow newcomers to have access to the bubble messages since the creation of the bubble
-                    rainbowSDK.bubbles.createBubble("Support", "A little description of my bubble", withHistory).then(async function(bubble) {
-                        // do something with the bubble created
-                        
-                        let invitedAsModerator = false;     // To set to true if you want to invite someone as a moderator
-                        let sendAnInvite = false;            // To set to false if you want to add someone to a bubble without having to invite him first
-                        let inviteReason = "bot-invite";    // Define a reason for the invite (part of the invite received by the recipient)
-                        var contact_id = await rainbowSDK.contacts.getContactByJid(message.fromJid);
-                        
-                        rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, invitedAsModerator, sendAnInvite, inviteReason).then(function(bubbleUpdated) {
-                            // do something with the invite sent
-                            logger.log("debug", "user has been added to bubble");
-                        }).catch(function(err) {
-                            // do something if the invitation failed (eg. bad reference to a buble)
-                            logger.log("debug", "user invite failed");
-                        });
-                        
-                        var contact_agent = await rainbowSDK.contacts.getContactById("", true);
-                        rainbowSDK.bubbles.inviteContactToBubble(contact_agent, bubble, invitedAsModerator, sendAnInvite, inviteReason).then(function(bubbleUpdated) {
-                            // do something with the invite sent
-                            logger.log("debug", "agent has been added to bubble");
-                        }).catch(function(err) {
-                            // do something if the invitation failed (eg. bad reference to a buble)
-                            logger.log("debug", "agent invite failed");
-                        });
-                        
-                    }).catch(function(err) {
-                        // do something if the creation of the bubble failed (eg. providing the same name as an existing bubble)
-                        logger.log("debug","bubble creation failed");
-                    });
-                }
-            }
-        }
-    });
-    
 });
