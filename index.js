@@ -15,13 +15,13 @@ let options = {
         host: "sandbox"
     },
     credentials: {
-        login: "", // To replace by your developer credendials
-        password: "" // To replace by your developer credentials
+        login: "joey_yeo@mymail.sutd.edu.sg", // To replace by your developer credendials
+        password: "OFLl[8d(Py~8" // To replace by your developer credentials
     },
     // Application identifier
     application: {
-        appID: "",
-        appSecret: ""
+        appID: "b6f834105aed11eabf7e77d14e87b936",
+        appSecret: "LzUG5l0iM9YproZTONXSkwnRmeAl7cEWrxSyg3ziSHlPpOVGVA8YY5lC2R6B0IwT"
     },
 
     // Logs options
@@ -57,19 +57,60 @@ let rainbowSDK = new RainbowSDK(options);
 rainbowSDK.start().then(() => {
      // Do something when the SDK is connected to Rainbow
 
-     // listen to request
-    app.use(express.static('public'));
+     // Set static folders
+     // Grant access permission
+    app.use('/public', express.static('public'));
+    app.use('/static', express.static('static'));
     app.use(bodyParser.urlencoded({
     extended: true
     }));
 
-    // a simple form on localhost
+    // get root html
     app.get('/',function(req,res){
-    res.sendfile("index.html");
+    res.sendfile("./public/index.html");
     });
 
+    // get all other htmls
+    /*
+    contactUs
+    chat
+    email
+    call
+    */
+    app.get('/chat.html', function(req, res){
+        res.sendfile("./public/chat.html");
+    })
+
+    app.get('/contactUs.html', function(req, res){
+        res.sendfile("./public/contactUs.html");
+    })
+
+    app.get('/email.html', function(req, res){
+        res.sendfile("./public/email.html");
+    })
+
+    app.get('/call.html', function(req, res){
+        res.sendfile("./public/call.html");
+    })
+
+    app.post('/guestLogin', async function(req, res){
+        console.log("Creation of guest account request received.");
+
+        var guestaccount = await rainbowSDK.admin.createGuestUser(7200).then( (guest) => {
+            return guest;
+        }).catch((err) => {
+            logger.log("debug", "error creating user");
+        });
+        var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password};
+        
+        // returns the credentials for guest user account
+        res.end(JSON.stringify(loginCred));
+    })
+
+    // Currently we combien guest account creation and usage tgt
     // creates guest user account
-    app.post('/', async function(req,res){
+    /*
+    app.post('/reAccount', async function(req,res){
         var firstName=req.body.firstName;
         var lastName=req.body.lastName;
         var guestaccount;
@@ -89,6 +130,7 @@ rainbowSDK.start().then(() => {
         // returns the credentials for guest user account
         res.end(JSON.stringify(loginCred));
      });
+     */
      
     var server = app.listen(8081, function () {
         var host = server.address().address

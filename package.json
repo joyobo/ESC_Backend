@@ -16,7 +16,9 @@
   "author": "AL-Enterprise <support@openrainbow.com>",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "comment-json": "^2.4.1",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "rainbow-node-sdk": "^1.65.2",
