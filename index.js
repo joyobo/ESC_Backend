@@ -1,7 +1,7 @@
 "use strict";
 const logger    = require('./app//modules/logger');
 const push = require("./app/modules/database_mod");
-const add_to_queue = require("./add_to_queue");
+const db = require("./add_to_queue");
 //var mysql = require('mysql');
 
 var express = require('express');
@@ -104,7 +104,7 @@ rainbowSDK.start().then(() => {
                 logger.log("debug", "bubble jid: "+ bubbleJid);
 
                 // push the bubble jid into the respective category in db
-                add_to_queue(bubbleJid, skill);
+                db.add_to_queue(bubbleJid, skill);
                 
             }).catch(function(err) {
                 // do something if the invitation failed (eg. bad reference to a buble)
@@ -141,12 +141,16 @@ rainbowSDK.start().then(() => {
 
                 var contact_id = await rainbowSDK.contacts.getContactByJid(message.fromJid);
 
+
                 if(message.content == "offline"){
+                    db.toggle_availability(message.content, contact_id);
                     // match with agents contact using contact_id and change the availability to 0
                     rainbowSDK.im.sendMessageToJid("You are now OFFLINE", message.fromJid);
+                
                 }
-                if(message.content == "online"){
-                    // match with agents contact using contact_id and change the availability to 0
+                else if(message.content == "online"){
+                    db.toggle_availability(message.content, contact_id);
+                    // match with agents contact using contact_id and change the availability to 1
                     rainbowSDK.im.sendMessageToJid("You are now ONLINE", message.fromJid);
                 }
 
