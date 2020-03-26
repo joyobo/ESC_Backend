@@ -125,7 +125,11 @@ rainbowSDK.start().then(() => {
         }).catch(function(err) {
             console.log("Error creating bubble");
         });
+        
+        // Assume that we know that it is Iphone: logging in
+        // add the bubbleId into the queues of agents with appropriate skill
 
+        
         // Add guest into bubble
         rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, false, false, "").then(function(bubbleUpdated) {
             // do something with the invite sent
@@ -135,6 +139,9 @@ rainbowSDK.start().then(() => {
             // do something if the invitation failed (eg. bad reference to a buble)
             logger.log("debug", "guest user invite failed");
         });
+
+        // wai
+
 
         // Add agent into bubble
         // Test function only
