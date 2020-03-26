@@ -1,8 +1,7 @@
 "use strict";
 const logger    = require('./app//modules/logger');
 const push = require("./app/modules/database_mod");
-const db = require("./add_to_queue");
-//var mysql = require('mysql');
+const db = require("./database_functions");
 
 var express = require('express');
 var app = express();
