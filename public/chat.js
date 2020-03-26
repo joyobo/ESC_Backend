@@ -5,7 +5,7 @@ $(function() {
     var applicationID = "b6f834105aed11eabf7e77d14e87b936",
         applicationSecret = "LzUG5l0iM9YproZTONXSkwnRmeAl7cEWrxSyg3ziSHlPpOVGVA8YY5lC2R6B0IwT";
 
-    var RainbowUsername, RainbowPassword, RainbowBubbleId, Conversation;
+    var RainbowUsername, RainbowPassword, RainbowBubbleId;
 
     // Define input stuff
     var input = document.getElementById("submission");
@@ -17,13 +17,25 @@ $(function() {
     // Button event listener
     submitButton.addEventListener("click", function(){
         var htmldata = "<div class=\"ms-Grid-row\"><p style=\"margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;\"><i class=\"ms-Icon ms-Icon--SkypeMessage\" aria-hidden=\"true\"></i>" + input.value + "</p></div>";
-        var container = document.getElementById('sentMessage');
+        var container = document.getElementById('sentMessages');
         container.insertAdjacentHTML('beforeend', htmldata);
-        rainbowSDK.im.sendMessageToConversation(conversation, input.value);
+        var bubble = rainbowSDK.bubbles.getBubbleById(RainbowBubbleId);
+        /*
+        .then(function(object){
+            console.log("bubble retrieved,", object);
+            return object;
+        }).catch(function(err){
+            console.log("Bubble retrieve failed.");
+        });
+        */
+        rainbowSDK.im.sendMessageToBubble(bubble, input.value);
+        input.value="";
         // Add info to your own table
+        /*
         var htmldata = "<div class=\"ms-Grid-row\"><p style=\"margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;\"><i class=\"ms-Icon ms-Icon--SkypeMessage\" aria-hidden=\"true\"></i>" + input.value + "</p></div>";
-        var container = document.getElementById('sentMessage');
+        var container = document.getElementById('sentMessages');
         container.insertAdjacentHTML('beforeend', htmldata);
+        */
     });
 
     endChatButton.addEventListener("click", function(){
@@ -58,15 +70,22 @@ $(function() {
                 RainbowPassword = result.Password;
                 RainbowBubbleId = result.BubbleId;
                 console.log("Data fetched");
+                console.log("bubble id is:", RainbowBubbleId);
+                
+                // Sign in to rainbow
+                rainbowSDK.connection.signin(RainbowUsername, RainbowPassword)
+                               .then(function(object) {
+                                    console.log("User login successful", object);
+                                })
+                                .catch(function(err) {
+                                    console.log("User login failed", err);
+                                });
+                console.log("Bubble id is", RainbowBubbleId);
+            }else if(this.status != 200){
+                console.log("Wrong when fetching data from api");
             }
         };
-
-        // Sign in to rainbow
-        rainbowSDK.connection.signin(RainbowUsername, RainbowPassword);
-        Conversation = rainbowSDK.conversations.getConversationByBubbleId(RainbowBubbleId);
     }
-
-
 
     /* Callback for handling the event 'RAINBOW_ONCONNECTIONSTATECHANGED' */
     var onLoaded = function onLoaded() {
@@ -84,8 +103,9 @@ $(function() {
 
     // Im handler
     var onNewMessageReceived = function onNewMessageReceived(event) {
-        var htmldata = "<div class=\"ms-Grid-row\"><p style=\"margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;\"><i class=\"ms-Icon ms-Icon--DelveAnalyticsLogo\" aria-hidden=\"true\"></i>" + event.message + "</p></div>";
-        var container = document.getElementById('sentMessage');
+        console.log("I received new message");
+        var htmldata = "<div class=\"ms-Grid-row\"><p style=\"margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;\"><i class=\"ms-Icon ms-Icon--DelveAnalyticsLogo\" aria-hidden=\"true\"></i>" + event.detail.message.data + "</p></div>";
+        var container = document.getElementById('sentMessages');
         container.insertAdjacentHTML('beforeend', htmldata);
     }
 

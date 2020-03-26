@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "rainbow-node-sdk": "^1.65.2",
+    "rainbow-web-sdk": "^1.68.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

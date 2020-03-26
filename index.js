@@ -9,6 +9,9 @@ var bodyParser = require('body-parser');
 // Load the SDK
 let RainbowSDK = require("rainbow-node-sdk");
 
+app.use('/public', express.static('public'));
+app.use('/static', express.static('static'));
+
 // Define your configuration
 let options = {
     rainbow: {
@@ -59,10 +62,8 @@ rainbowSDK.start().then(() => {
 
      // Set static folders
      // Grant access permission
-    app.use('/public', express.static('public'));
-    app.use('/static', express.static('static'));
     app.use(bodyParser.urlencoded({
-    extended: true
+        extended: true
     }));
 
     // get root html
@@ -93,6 +94,18 @@ rainbowSDK.start().then(() => {
         res.sendfile("./public/call.html");
     })
 
+    app.get('/vendors-sdk.min.js', function(req, res){
+        res.sendfile("./public/vendors-sdk.min.js");
+    })
+
+    app.get('/rainbow-sdk.min.js', function(req, res){
+        res.sendfile("./public/rainbow-sdk.min.js");
+    })
+
+    app.get('/chat.js', function(req, res){
+        res.sendfile("./public/chat.js");
+    })
+
     app.get('/guestLogin', async function(req, res){
         console.log("Creation of guest account request received.");
         // Create account
@@ -101,23 +114,19 @@ rainbowSDK.start().then(() => {
         }).catch((err) => {
             logger.log("debug", "error creating user");
         });
+        var contact_id = await rainbowSDK.contacts.getContactById(guestaccount.id);
 
-        // Create Bubble
-        let withHistory = true;
+        // Create Bubble of name support
+        let withHistory = false;
         var bubbleId;
-        var bubble = await rainbowSDK.bubbles.createBubble("Support", "A little description of my bubble", withHistory).then((bubble) => {
+        var bubble = await rainbowSDK.bubbles.createBubble("Debug", "A little description of my bubble", withHistory).then((bubble) => {
+            bubbleId = bubble.id;
             return bubble;
         }).catch(function(err) {
             console.log("Error creating bubble");
         });
-        bubbleId = bubble.id;
-        var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password, "BubbleId": bubbleId};
-        
-        // returns the credentials for guest user account
-        res.end(JSON.stringify(loginCred));
 
-        // Add user into bubble
-        var contact_id = await rainbowSDK.contacts.getContactById(guestaccount.id);
+        // Add guest into bubble
         rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, false, false, "").then(function(bubbleUpdated) {
             // do something with the invite sent
             logger.log("debug", "guest user has been added to bubble");
@@ -126,6 +135,24 @@ rainbowSDK.start().then(() => {
             // do something if the invitation failed (eg. bad reference to a buble)
             logger.log("debug", "guest user invite failed");
         });
+
+        // Add agent into bubble
+        // Test function only
+        var agent_id = await rainbowSDK.contacts.getContactById("5e60e5ddd8084c29e64eba90");
+        rainbowSDK.bubbles.inviteContactToBubble(agent_id, bubble, false, false, "").then(function(bubbleUpdated) {
+            logger.log("debug", "agent added into bubble");                
+        }).catch(function(err) {
+            // do something if the invitation failed (eg. bad reference to a buble)
+            logger.log("debug", "agent user invite failed");
+        });
+    
+       
+
+        var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password, "BubbleId": bubbleId};
+        
+        // returns the credentials for guest user account
+        res.end(JSON.stringify(loginCred));
+        
     })
      
     var server = app.listen(8081, function () {
