@@ -1,6 +1,7 @@
 "use strict";
 const logger    = require('./app//modules/logger');
 const push = require("./app/modules/database_mod");
+const db = require('./database_functions');
 
 var express = require('express');
 // var router = express.Router();
@@ -148,7 +149,7 @@ rainbowSDK.start().then(() => {
 
         // Assume that we know that it is Iphone: logging in
         // add the bubbleId into the queues of agents with appropriate skill
-
+        db.add_to_queue(bubbleId, "skill1");
         
         // Add guest into bubble
         rainbowSDK.bubbles.inviteContactToBubble(contact_id, bubble, false, false, "").then(function(bubbleUpdated) {
