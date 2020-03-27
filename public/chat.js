@@ -39,7 +39,17 @@ $(function() {
     });
 
     endChatButton.addEventListener("click", function(){
-
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('POST', 'endChat', true);
+        xhttp.send();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("POST request sent successfully");
+                // Do your things when pressed end button
+            }else if(this.status != 200){
+                console.log("endChat request sent failed");
+            }
+        }
     });
 
     // Execute a function when the user releases a key on the keyboard
@@ -84,8 +94,8 @@ $(function() {
             }else if(this.status != 200){
                 console.log("Wrong when fetching data from api");
             }
-        };
-    }
+        }
+    };
 
     /* Callback for handling the event 'RAINBOW_ONCONNECTIONSTATECHANGED' */
     var onLoaded = function onLoaded() {
@@ -107,7 +117,7 @@ $(function() {
         var htmldata = "<div class=\"ms-Grid-row\"><p style=\"margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;\"><i class=\"ms-Icon ms-Icon--DelveAnalyticsLogo\" aria-hidden=\"true\"></i>" + event.detail.message.data + "</p></div>";
         var container = document.getElementById('sentMessages');
         container.insertAdjacentHTML('beforeend', htmldata);
-    }
+    };
 
     // add event listener
     document.addEventListener(rainbowSDK.im.RAINBOW_ONNEWIMMESSAGERECEIVED, onNewMessageReceived)
