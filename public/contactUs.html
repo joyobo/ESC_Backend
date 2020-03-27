@@ -16,6 +16,27 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.min.js"></script>
         <script src="./vendors-sdk.min.js"></script>
         <script src="./rainbow-sdk.min.js"></script>
+
+        <script>
+            function iPhonelogInFunction(){
+                var catdata = 'iphone,login';
+                localStorage.setItem('category',catdata);
+                window.location.replace('/chat.html');
+            }
+
+            function iPhoneCrashFunction(){
+                var catdata = 'iphone,crash';
+                localStorage.setItem('category',catdata);
+                window.location.replace('/chat.html');
+            }
+
+            function MacBookLoginFunction(){
+                var catdata = 'macbook,login';
+                localStorage.setItem('category',catdata);
+                window.location.replace('/chat.html');
+            }
+        </script>
+
         <title>Contact Us - Contoso Support</title>
 
         <style>
@@ -48,7 +69,7 @@
         <div class="ms-Grid-row" dir="ltr" style="background-color: black; top: 0px; bottom: 0px;">
             <div class="ms-Grid-col ms-sm12 ms-md12 ms-lg12" style="padding-top: 3px; margin-bottom: 8px; text-align: center;">
                 <span style="height: fit-content; font-size: 24px; color: white;">
-                    <i class="ms-Icon ms-Icon--DelveAnalyticsLogo" aria-hidden="true""></i>
+                    <i class="ms-Icon ms-Icon--DelveAnalyticsLogo" aria-hidden="true"></i>
                     <b>Contoso Support</b>
                 </span>
             </div>
@@ -79,7 +100,10 @@
             <!--Main content provider-->
             <button type="button" class="collapsible">Chat With Us</button>
             <div class="content">
-                <a href="chat.html">Iphone: Logging in</a>
+                <!-- <a href="chat.html">Iphone: Logging in</a> -->
+                <button onclick="iPhonelogInFunction()">Iphone: logging in</button><br>
+                <button onclick="iPhoneCrashFunction()">Iphone: crash</button><br>
+                <button onclick="MacBookLoginFunction()">Macbook: logging in</button>
             </div>
         
            <!--  <a href="chat.html">

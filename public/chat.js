@@ -13,6 +13,19 @@ $(function() {
     // Define two buttons
     var submitButton = document.getElementById('submit');
     var endChatButton = document.getElementById('endChat');
+    var status = document.getElementById('status');
+
+    window.onbeforeunload = function (event) {
+        var message = 'Sure you want to leave?';
+        if (typeof event == 'undefined') {
+          event = window.event;
+        }
+        if (event) {
+          endChatButton.click();
+          event.returnValue = message;
+        }
+         return message;
+      }
 
     // Button event listener
     submitButton.addEventListener("click", function(){
@@ -39,7 +52,11 @@ $(function() {
     });
 
     endChatButton.addEventListener("click", function(){
-
+        var data={"bubbleid": RainbowBubbleId};
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('POST', 'endChat', true);
+        xhttp.setRequestHeader('Content-Type','application/json');
+        xhttp.send(JSON.stringify(data));
     });
 
     // Execute a function when the user releases a key on the keyboard
@@ -60,9 +77,15 @@ $(function() {
     var onReady = function onReady() {
         // Use of ajax to fetch result
         console.log("Fetching result");
+        // get the value from local storage
+        var data=localStorage.getItem('category');
+        var dataTosend={"cat": data};
         var xhttp = new XMLHttpRequest();
-        xhttp.open('GET', 'guestLogin', true);
-        xhttp.send();
+        xhttp.open('POST', 'guestLogin', true);
+        xhttp.setRequestHeader('Content-Type','application/json');
+        // send the data over to server
+        xhttp.send(JSON.stringify(dataTosend));
+        // wait for server to return the guest user cred
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 var result = JSON.parse(this.responseText);
@@ -75,6 +98,7 @@ $(function() {
                 // Sign in to rainbow
                 rainbowSDK.connection.signin(RainbowUsername, RainbowPassword)
                                .then(function(object) {
+                                    status.innerHTML = 'Agent connected';
                                     console.log("User login successful", object);
                                 })
                                 .catch(function(err) {

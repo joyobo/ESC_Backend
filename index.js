@@ -3,6 +3,7 @@ const logger    = require('./app//modules/logger');
 const push = require("./app/modules/database_mod");
 
 var express = require('express');
+// var router = express.Router();
 var app = express();
 var bodyParser = require('body-parser');
 
@@ -66,6 +67,8 @@ rainbowSDK.start().then(() => {
         extended: true
     }));
 
+    app.use(bodyParser.json());
+
     // get root html
     app.get('/',function(req,res){
     res.sendfile("./public/index.html");
@@ -106,7 +109,18 @@ rainbowSDK.start().then(() => {
         res.sendfile("./public/chat.js");
     })
 
-    app.get('/guestLogin', async function(req, res){
+    app.post('/endChat', function(req, res){
+        var rbwbubbleid = req.body.bubbleid;
+        // set engage of the agent in the bubble from 1 to 0
+        console.log("bubbleid: "+rbwbubbleid);
+        res.end();
+    });
+
+    app.post('/guestLogin', async function(req, res){
+        var cat = req.body.cat;
+        var catArray = cat.split(',');
+        console.log("category: "+cat);
+
         console.log("Creation of guest account request received.");
         // Create account
         var guestaccount = await rainbowSDK.admin.createAnonymousGuestUser(7200).then( (guest) => {
@@ -126,6 +140,12 @@ rainbowSDK.start().then(() => {
             console.log("Error creating bubble");
         });
         
+        // using cat, match it with the agents skills in database and add the bubbleID into that appropriate queue
+        var category = catArray[0];
+        var skill = catArray[1];
+        console.log("category: "+category+"   skill: "+skill);
+        var agent_id = "5e60e5ddd8084c29e64eba90";
+
         // Assume that we know that it is Iphone: logging in
         // add the bubbleId into the queues of agents with appropriate skill
 
@@ -140,20 +160,20 @@ rainbowSDK.start().then(() => {
             logger.log("debug", "guest user invite failed");
         });
 
-        // wai
-
-
         // Add agent into bubble
         // Test function only
-        var agent_id = await rainbowSDK.contacts.getContactById("5e60e5ddd8084c29e64eba90");
-        rainbowSDK.bubbles.inviteContactToBubble(agent_id, bubble, false, false, "").then(function(bubbleUpdated) {
+        var agent_contact = await rainbowSDK.contacts.getContactById(agent_id);
+        rainbowSDK.bubbles.inviteContactToBubble(agent_contact, bubble, false, false, "").then(function(bubbleUpdated) {
+            // rainbowSDK.im.sendMessageToBubble("hi",bubbleUpdated);
+
             logger.log("debug", "agent added into bubble");                
         }).catch(function(err) {
             // do something if the invitation failed (eg. bad reference to a buble)
             logger.log("debug", "agent user invite failed");
         });
-    
-       
+        
+        //var array =["5e60e5ddd8084c29e64eba90"];
+        // rainbowSDK.im.sendMessageToBubbleJid("Hi, you are having issues with "+category+" more specifically an issue with "+skill+". Please provide more information to our agent :)",bubble.jid);
 
         var loginCred = {"Username": guestaccount.loginEmail, "Password": guestaccount.password, "BubbleId": bubbleId};
         
