@@ -17,3 +17,10 @@
     height: 700px;
     display: none;
 }
+#callWindow {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 700px;
+    display: none;
+}
