@@ -8,6 +8,7 @@
 
         <!--Linkage of CSS sheets-->
         <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
+        <link rel="stylesheet" href="../static/css/support.css" />
 
         <!--Link of Main open Rainbow files-->
         <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.min.js"></script>
@@ -32,7 +33,7 @@
             </div>
         </div>
 
-        <!--Choice of problem-->
+        <!--State-->
         <div class="ms-Grid-row" dir="ltr">
             <div class="ms-Grid-col ms-sm12 ms-md12 ms-lg12" dir="ltr" style="font-size: 30px;">
                 <p id="status">
@@ -44,53 +45,83 @@
         <!--Chat window-->
         <div class="ms-Grid-row" dir="ltr" style="text-align: center;">
             <div class="ms-Grid-col ms-sm0 ms-md2 ms-lg2" dir="ltr" style="background-color: bisque; height: 700px"></div>
-            <!--Main container for chat content-->
-            <div class="ms-Grid-col ms-sm12 ms-md8 ms-lg8" dir="ltr" style="height: 700px;">
-                <!--Chat content-->
-                <div id="sentMessages" class="ms-Grid-row" style="height: 74%; background-color: aliceblue; overflow: auto;">
-                    <!-- example message-->
-                    <div class="ms-Grid-row">
-                        <p style="margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;">
-                            <i class="ms-Icon ms-Icon--DelveAnalyticsLogo" aria-hidden="true""></i>
-                            This is a very new message
-                        </p>
-                    </div>
-                    <!--End of example message-->
 
-                     <!-- example message-->
-                     <div class="ms-Grid-row">
-                        <p style="margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;">
-                            <i class="ms-Icon ms-Icon--SkypeMessage" aria-hidden="true"></i>
-                            This is a very new message
-                        </p>
-                    </div>
-                    <!--End of example message-->
-                    
+            <div class="ms-Grid-col ms-sm12 ms-md8 ms-lg8" dir="ltr">
+                <!--Problem statement-->
+                <div id="statement" dir="ltr" style="text-align: left; overflow: auto; padding-left: 20px;">
+                    <h1>Please tell us your problem:</h1>
+                    <p>
+                        <label for="product">What product are you facing issues with?</label>
+                        <select id="product">
+                            <option value="iConto">iConto</option>
+                            <option value="Consotosh">Consotosh</option>
+                            <option value="Contoso Phone">Contoso Phone</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label for="problem">What kind of problem are you facing?</label>
+                        <select id="problem">
+                            <option value="Battery/Power">Battery/Power</option>
+                            <option value="Screen">Screen</option>
+                            <option value="Boot">Boot</option>
+                            <option value="Account">Account/Login</option>
+                        </select>
+                    </p>
+                    <p>
+                        <button id="submitProblem">Next</button>
+                    </p>
                 </div>
-                <!--input and submit-->
-                <div class="ms-Grid-row" style="height: 26%; background-color: aquamarine;">
-                    <div class="ms-Grid-row" style="margin: 14px; background-color: white; height: 154px;">
-                        <div class="ms-Grid-col ms-sm10 ms-md10 ms-lg10" style="height: 154px;">
-                            <form style="height: 152px; text-align: left;">
-                                <!--input message ehre-->
-                                <input id="submission" type="text" placeholder="Type your message" style="width: 100%; height: 100%; border: none;">
-                            </form>
+
+                <!--Main container for chat content-->
+                <div id="chatWindow" dir="ltr">
+                    <!--Chat content-->
+                    <div id="sentMessages" class="ms-Grid-row" style="height: 74%; background-color: aliceblue; overflow: auto;">
+
+                        <!-- example message-->
+                        <div class="ms-Grid-row">
+                            <p style="margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;">
+                                <i class="ms-Icon ms-Icon--DelveAnalyticsLogo" aria-hidden="true""></i>
+                                This is an example message from Agent
+                            </p>
                         </div>
-                        <div class="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                            <div class="ms-Grid-row" style="height:77px">
-                                <button id="submit" style="height: 100%; width: 100%; border: none;">
-                                    Submit
-                                </button>
+                        <!--End of example message-->
+
+                        <!-- example message-->
+                        <div class="ms-Grid-row">
+                            <p style="margin-left: 20px; margin-right: 20px; margin-top:10px; padding:8px; background-color: #efefef; text-align: left;">
+                                <i class="ms-Icon ms-Icon--SkypeMessage" aria-hidden="true"></i>
+                                This is an example message from Customer
+                            </p>
+                        </div>
+                        <!--End of example message-->
+                        
+                    </div>
+                    <!--input and submit-->
+                    <div class="ms-Grid-row" style="height: 26%; background-color: aquamarine;">
+                        <div class="ms-Grid-row" style="margin: 14px; background-color: white; height: 154px;">
+                            <div class="ms-Grid-col ms-sm10 ms-md10 ms-lg10" style="height: 154px;">
+                                <form style="height: 152px; text-align: left;">
+                                    <!--input message ehre-->
+                                    <input id="submission" type="text" placeholder="Type your message" style="width: 100%; height: 100%; border: none;">
+                                </form>
                             </div>
-                            <div class="ms-Grid-row" style="height:77px">
-                                <button id="endChat" style="height: 100%; width: 100%; border: none;" onclick="parent.location='/'">
-                                    End chat
-                                </button>
+                            <div class="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                                <div class="ms-Grid-row" style="height:77px">
+                                    <button id="submit" style="height: 100%; width: 100%; border: none;">
+                                        Submit
+                                    </button>
+                                </div>
+                                <div class="ms-Grid-row" style="height:77px">
+                                    <button id="endChat" style="height: 100%; width: 100%; border: none;" onclick="parent.location='/'">
+                                        End chat
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="ms-Grid-col ms-sm0 ms-md2 ms-lg2" dir="ltr" style="background-color: bisque; height: 700px"></div>
         </div>
 

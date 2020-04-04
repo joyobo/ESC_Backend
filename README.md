@@ -10,3 +10,8 @@
 - A simple webpage for a form asking for first name and last name
 - Server end gets these information and creates a new guest user account
 - Newly created guest user account's credentials (loginEmail and password) would be passed back
+
+## 4/4/2020
+- Integrate Problem selection with chat page
+- Implementation of HTTPs in Node.js
+- Problem statement API added

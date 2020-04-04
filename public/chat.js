@@ -13,6 +13,7 @@ $(function() {
     // Define two buttons
     var submitButton = document.getElementById('submit');
     var endChatButton = document.getElementById('endChat');
+    var submitProblemButton = document.getElementById('submitProblem');
     var status = document.getElementById('status');
 
     window.onbeforeunload = function (event) {
@@ -26,6 +27,26 @@ $(function() {
         }
          return message;
       }
+
+    // Submit Problem button function here
+    submitProblemButton.addEventListener("click", function(){
+
+        // Get data
+        var productName = document.getElementById("product");
+        var productIssue = document.getElementById("problem");
+
+        // Change window visibility
+        var problemStatement = document.getElementById("statement");
+        var chatWindow = document.getElementById("chatWindow");
+        problemStatement.style.display = "none";
+        chatWindow.style.display = "inherit";
+
+        // Send data
+        var data = {"product": productName.value, "issue": productIssue.value};
+        xhttp.open('POST', 'submitProblem', true);
+        xhttp.setRequestHeader('Content-Type','application/json');
+        xhttp.send(JSON.stringify(data));
+    });
 
     // Button event listener
     submitButton.addEventListener("click", function(){
